@@ -80,6 +80,20 @@ const ChatInterface = ({
         timestamp: msg.timestamp,
       }));
 
+  // Debug logging
+  console.log("ChatInterface Debug:", {
+    currentChat: currentChat
+      ? {
+          id: currentChat._id,
+          chatType: currentChat.chatType,
+          messageCount: currentChat.messages.length,
+        }
+      : null,
+    localMessages: localMessages.length,
+    totalMessages: messages.length,
+    aiContext,
+  });
+
   // Update initial message when it changes
   useEffect(() => {
     if (!currentChat) {
@@ -94,14 +108,28 @@ const ChatInterface = ({
     }
   }, [initialMessage, currentChat]);
 
-  // Clear current chat when component unmounts or context changes
+  // Clear chat when switching between different chat types ONLY when aiContext changes
+  useEffect(() => {
+    if (
+      currentChat &&
+      currentChat.chatType &&
+      currentChat.chatType !== aiContext
+    ) {
+      console.log(
+        `Clearing chat due to type mismatch: current=${currentChat.chatType}, expected=${aiContext}`
+      );
+      clearCurrentChat();
+    }
+  }, [aiContext]); // Only depend on aiContext changes
+
+  // Clear current chat when aiContext changes or component unmounts
   useEffect(() => {
     return () => {
       if (currentChat) {
         clearCurrentChat();
       }
     };
-  }, [aiContext]);
+  }, [aiContext]); // Clear on unmount and when aiContext changes
 
   // Handle scroll within message container
   const handleMessageScroll = (e) => {

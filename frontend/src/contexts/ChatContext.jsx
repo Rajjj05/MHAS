@@ -185,13 +185,22 @@ export const ChatProvider = ({ children }) => {
   );
 
   // Load specific chat
-  const loadChat = useCallback(async (chatId) => {
+  const loadChat = useCallback(async (chatId, expectedChatType = null) => {
     try {
       setLoading(true);
       setError(null);
       const response = await ChatService.getChat(chatId);
 
       if (response.success) {
+        // Validate chat type if expected type is provided
+        if (expectedChatType && response.chat.chatType !== expectedChatType) {
+          console.warn(
+            `Chat type mismatch: expected ${expectedChatType}, got ${response.chat.chatType}`
+          );
+          // Don't load chat if it doesn't match expected type
+          return null;
+        }
+
         setCurrentChat(response.chat);
         return response.chat;
       }
@@ -239,6 +248,23 @@ export const ChatProvider = ({ children }) => {
     setCurrentChat(null);
     setWelcomeMessage(null);
   }, []);
+
+  // Clear current chat if it doesn't match expected type
+  const clearChatIfTypeMismatch = useCallback(
+    (expectedChatType) => {
+      if (
+        currentChat &&
+        currentChat.chatType &&
+        currentChat.chatType !== expectedChatType
+      ) {
+        console.log(
+          `Clearing chat due to type mismatch: current=${currentChat.chatType}, expected=${expectedChatType}`
+        );
+        clearCurrentChat();
+      }
+    },
+    [currentChat, clearCurrentChat]
+  );
 
   // Clear error
   const clearError = useCallback(() => {
@@ -378,6 +404,7 @@ export const ChatProvider = ({ children }) => {
     loadChat,
     deleteChat,
     clearCurrentChat,
+    clearChatIfTypeMismatch,
     clearError,
 
     // History actions
