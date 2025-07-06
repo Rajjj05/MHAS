@@ -11,15 +11,23 @@ const generateToken = (userId) => {
 // Google OAuth success callback
 const googleAuthSuccess = async (req, res) => {
   try {
+    const frontendUrl =
+      process.env.FRONTEND_URL || console.log("Frontend URL:", frontendUrl); // Debug log
+    console.log("Environment variables:", {
+      FRONTEND_URL: process.env.FRONTEND_URL,
+      CLIENT_URL: process.env.CLIENT_URL,
+      NODE_ENV: process.env.NODE_ENV,
+    });
+
     if (!req.user) {
-      return res.redirect(`${process.env.FRONTEND_URL}`);
+      return res.redirect(frontendUrl);
     }
 
     const token = generateToken(req.user._id);
 
     // Redirect to frontend homepage with token as query parameter
     res.redirect(
-      `${process.env.FRONTEND_URL}/?token=${token}&user=${encodeURIComponent(
+      `${frontendUrl}/?token=${token}&user=${encodeURIComponent(
         JSON.stringify({
           id: req.user._id,
           name: req.user.name,
@@ -30,7 +38,8 @@ const googleAuthSuccess = async (req, res) => {
     );
   } catch (error) {
     console.error("Google auth error:", error);
-    res.redirect(`${process.env.FRONTEND_URL}/login?error=server_error`);
+    const frontendUrl = process.env.FRONTEND_URL;
+    res.redirect(`${frontendUrl}/login?error=server_error`);
   }
 };
 
