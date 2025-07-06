@@ -8,7 +8,7 @@ const {
   getUserProfile,
   logoutUser,
   updateUserProfile,
-} = require("../controllers/userController");
+} = require("../controllers/UserController");
 
 const router = express.Router();
 

@@ -11,7 +11,7 @@ const {
   toggleBookmark,
   deleteChat,
   exportChat,
-} = require("../controllers/chatController");
+} = require("../controllers/ChatController");
 
 const router = express.Router();
 

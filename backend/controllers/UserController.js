@@ -24,7 +24,9 @@ const googleAuthSuccess = async (req, res) => {
     const token = generateToken(req.user._id);
     console.log("Token generated successfully");
 
-    const redirectUrl = `${process.env.FRONTEND_URL}/?token=${token}&user=${encodeURIComponent(
+    const redirectUrl = `${
+      process.env.FRONTEND_URL
+    }/?token=${token}&user=${encodeURIComponent(
       JSON.stringify({
         id: req.user._id,
         name: req.user.name,
