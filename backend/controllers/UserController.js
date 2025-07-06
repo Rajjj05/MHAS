@@ -38,7 +38,10 @@ const googleAuthSuccess = async (req, res) => {
     );
   } catch (error) {
     console.error("Google auth error:", error);
-    const frontendUrl = process.env.FRONTEND_URL;
+    const frontendUrl =
+      process.env.FRONTEND_URL ||
+      process.env.CLIENT_URL ||
+      "http://localhost:5173";
     res.redirect(`${frontendUrl}/login?error=server_error`);
   }
 };
