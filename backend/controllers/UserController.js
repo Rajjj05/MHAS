@@ -11,38 +11,34 @@ const generateToken = (userId) => {
 // Google OAuth success callback
 const googleAuthSuccess = async (req, res) => {
   try {
-    const frontendUrl =
-      process.env.FRONTEND_URL || console.log("Frontend URL:", frontendUrl); // Debug log
-    console.log("Environment variables:", {
-      FRONTEND_URL: process.env.FRONTEND_URL,
-      CLIENT_URL: process.env.CLIENT_URL,
-      NODE_ENV: process.env.NODE_ENV,
-    });
+    console.log("OAuth callback triggered");
+    console.log("Request user:", req.user ? "User exists" : "No user");
+    console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
 
     if (!req.user) {
-      return res.redirect(frontendUrl);
+      console.log("No user found, redirecting to frontend");
+      return res.redirect(process.env.FRONTEND_URL);
     }
 
+    console.log("Generating token for user:", req.user._id);
     const token = generateToken(req.user._id);
+    console.log("Token generated successfully");
 
-    // Redirect to frontend homepage with token as query parameter
-    res.redirect(
-      `${frontendUrl}/?token=${token}&user=${encodeURIComponent(
-        JSON.stringify({
-          id: req.user._id,
-          name: req.user.name,
-          email: req.user.email,
-          avatar: req.user.avatar,
-        })
-      )}`
-    );
+    const redirectUrl = `${process.env.FRONTEND_URL}/?token=${token}&user=${encodeURIComponent(
+      JSON.stringify({
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        avatar: req.user.avatar,
+      })
+    )}`;
+
+    console.log("Redirecting to:", redirectUrl);
+    res.redirect(redirectUrl);
   } catch (error) {
     console.error("Google auth error:", error);
-    const frontendUrl =
-      process.env.FRONTEND_URL ||
-      process.env.CLIENT_URL ||
-      "http://localhost:5173";
-    res.redirect(`${frontendUrl}/login?error=server_error`);
+    console.error("Error stack:", error.stack);
+    res.redirect(`${process.env.FRONTEND_URL}/login?error=server_error`);
   }
 };
 
@@ -140,6 +136,19 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+// Simple test endpoint
+const testEndpoint = (req, res) => {
+  res.json({
+    message: "UserController working",
+    timestamp: new Date().toISOString(),
+    env: {
+      JWT_SECRET: process.env.JWT_SECRET ? "Set" : "Not set",
+      FRONTEND_URL: process.env.FRONTEND_URL ? "Set" : "Not set",
+      NODE_ENV: process.env.NODE_ENV,
+    },
+  });
+};
+
 module.exports = {
   googleAuthSuccess,
   googleAuthSuccessSecure,
@@ -148,4 +157,5 @@ module.exports = {
   logoutUser,
   updateUserProfile,
   generateToken,
+  testEndpoint,
 };
