@@ -8,6 +8,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import ScrollToTop from "./components/ScrollToTop";
 import PageTransition from "./components/PageTransition";
 import AuthCallback from "./components/AuthCallback";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ChatProvider } from "./contexts/ChatContext";
 
@@ -53,17 +54,21 @@ function App() {
                       <Route
                         path="/mental-health"
                         element={
-                          <PageTransition>
-                            <MentalHealthChat />
-                          </PageTransition>
+                          <ProtectedRoute>
+                            <PageTransition>
+                              <MentalHealthChat />
+                            </PageTransition>
+                          </ProtectedRoute>
                         }
                       />
                       <Route
                         path="/spiritual"
                         element={
-                          <PageTransition>
-                            <SpiritualChat />
-                          </PageTransition>
+                          <ProtectedRoute>
+                            <PageTransition>
+                              <SpiritualChat />
+                            </PageTransition>
+                          </ProtectedRoute>
                         }
                       />
                       <Route
@@ -85,9 +90,11 @@ function App() {
                       <Route
                         path="/history"
                         element={
-                          <PageTransition>
-                            <History />
-                          </PageTransition>
+                          <ProtectedRoute>
+                            <PageTransition>
+                              <History />
+                            </PageTransition>
+                          </ProtectedRoute>
                         }
                       />
                     </Routes>
